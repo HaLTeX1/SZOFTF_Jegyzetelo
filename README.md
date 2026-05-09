@@ -1,0 +1,1 @@
+# SZOFTF_Jegyzetelo
