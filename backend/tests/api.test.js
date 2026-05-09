@@ -1,10 +1,23 @@
-// tests/api.test.js
 const request = require('supertest');
 const app = require('../server');
 const db = require('../config/db');
 
 describe('Jegyzet API Végpontok Tesztelése', () => {
     let letrehozottJegyzetId;
+
+    // 1. MEGOLDÁS: Megvárjuk, amíg a tábla biztosan létrejön a tesztek előtt
+    beforeAll((done) => {
+        db.run(`CREATE TABLE IF NOT EXISTS notes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            content TEXT,
+            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`, () => {
+            // A callbackben hívjuk meg a done()-t.
+            done(); 
+        });
+    });
 
     // Teszt: Új jegyzet létrehozása
     it('POST /api/notes - Létre kell hoznia egy új jegyzetet', async () => {
@@ -19,7 +32,7 @@ describe('Jegyzet API Végpontok Tesztelése', () => {
         expect(response.body).toHaveProperty('id');
         expect(response.body.title).toBe('Teszt Jegyzet Címe');
         
-        letrehozottJegyzetId = response.body.id; // Eltároljuk a későbbi tesztekhez
+        letrehozottJegyzetId = response.body.id; // Eltároljuk a törléshez
     });
 
     // Teszt: Jegyzetek lekérdezése
@@ -38,10 +51,11 @@ describe('Jegyzet API Végpontok Tesztelése', () => {
         expect(response.statusCode).toBe(200);
         expect(response.body.message).toBe('Jegyzet sikeresen törölve.');
     });
-});
 
-// Tesztek végén lezárjuk az adatbázis kapcsolatot, hogy a Jest ne ragadjon be
-afterAll((done) => {
-    db.close();
-    done();
+    // Tesztek végén lezárjuk az adatbázis kapcsolatot
+    afterAll((done) => {
+        db.close(() => {
+            done();
+        });
+    });
 });
