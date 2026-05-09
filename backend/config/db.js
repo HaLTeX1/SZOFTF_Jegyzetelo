@@ -12,7 +12,8 @@ const db = new sqlite3.Database(dbPath, (err) => {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
             content TEXT,
-            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
         )`);
     }
 });

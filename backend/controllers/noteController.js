@@ -2,10 +2,21 @@ const db = require('../config/db');
 
 // Összes jegyzet lekérdezése
 exports.getAllNotes = (req, res, next) => {
-    const sql = 'SELECT * FROM notes ORDER BY createdAt DESC';
-    db.all(sql, [], (err, rows) => {
-        if (err) return next(err); // Átadjuk a hibakezelő middleware-nek
-        res.json(rows);
+    // Alapértelmezett értékek: oldal=1, limit=50 jegyzet/oldal
+    const limit = parseInt(req.query.limit) || 50;
+    const page = parseInt(req.query.page) || 1;
+    const offset = (page - 1) * limit;
+
+    const sql = 'SELECT * FROM notes ORDER BY updatedAt DESC LIMIT ? OFFSET ?';
+    
+    db.all(sql, [limit, offset], (err, rows) => {
+        if (err) return next(err);
+        res.json({
+            page: page,
+            limit: limit,
+            count: rows.length,
+            data: rows
+        });
     });
 };
 
@@ -59,7 +70,8 @@ exports.updateNote = (req, res, next) => {
         return res.status(400).json({ error: 'A cím (title) megadása kötelező!' });
     }
 
-    const sql = 'UPDATE notes SET title = ?, content = ? WHERE id = ?';
+    // A CURRENT_TIMESTAMP beállítja az aktuális időt a módosításkor
+    const sql = 'UPDATE notes SET title = ?, content = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ?';
     db.run(sql, [title.trim(), content, req.params.id], function(err) {
         if (err) return next(err);
         if (this.changes === 0) return res.status(404).json({ error: 'A jegyzet nem található.' });

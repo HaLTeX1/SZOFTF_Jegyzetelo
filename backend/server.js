@@ -22,8 +22,11 @@ app.use((err, req, res, next) => {
         details: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
 });
-
 // Szerver indítása
-app.listen(PORT, () => {
-    console.log(`A szerver fut a http://localhost:${PORT} címen.`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`🚀 A szerver fut a http://localhost:${PORT} címen.`);
+    });
+}
+
+module.exports = app;
