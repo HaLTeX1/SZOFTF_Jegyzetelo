@@ -53,7 +53,7 @@ Kövesse az alábbi lépéseket a projekt helyi környezetben történő elindí
 * **Node.js** telepítése (v18+ ajánlott).
 * A repository klónozása:
     ```bash
-    git clone [https://github.com/HaLTeX1/SZOFTF_Jegyzetelo.git](https://github.com/HaLTeX1/SZOFTF_Jegyzetelo.git)
+    git clone https://github.com/HaLTeX1/SZOFTF_Jegyzetelo.git
     cd SZOFTF_Jegyzetelo
     ```
 
